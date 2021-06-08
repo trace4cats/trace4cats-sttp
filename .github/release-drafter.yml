@@ -1,4 +1,4 @@
-name-template: 'Trace4Cats Http4s $NEXT_MINOR_VERSION'
+name-template: 'Trace4Cats Sttp $NEXT_MINOR_VERSION'
 tag-template: 'v$NEXT_MINOR_VERSION'
 categories:
   - title: '🚀 Features'
