@@ -9,7 +9,7 @@ object Dependencies {
 
     val catsEffect = "3.1.1"
     val http4s = "0.23.0-RC1"
-    val sttpClient3 = "3.3.6"
+    val sttpClient3 = "3.3.7"
     val sttpModel = "1.4.7"
     val sttpTapir = "0.18.0-M15"
   }
