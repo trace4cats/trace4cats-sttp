@@ -7,11 +7,13 @@ object Dependencies {
 
     val trace4cats = "0.12.0-RC1+156-7ea07b63"
 
-    val catsEffect = "3.1.1"
     val http4s = "0.23.0-RC1"
     val sttpClient3 = "3.3.6"
     val sttpModel = "1.4.7"
-    val sttpTapir = "0.18.0-M17"
+    val sttpTapir = "0.18.0-M15"
+
+    val kindProjector = "0.13.0"
+    val betterMonadicFor = "0.3.1"
   }
 
   lazy val trace4catsBase = "io.janstenpickle"           %% "trace4cats-base"            % Versions.trace4cats
@@ -30,4 +32,7 @@ object Dependencies {
   lazy val sttpTapirCats = "com.softwaremill.sttp.tapir"       %% "tapir-cats"          % Versions.sttpTapir
   lazy val sttpTapirJsonCirce = "com.softwaremill.sttp.tapir"  %% "tapir-json-circe"    % Versions.sttpTapir
   lazy val sttpTapirHttp4s = "com.softwaremill.sttp.tapir"     %% "tapir-http4s-server" % Versions.sttpTapir
+
+  lazy val kindProjector = ("org.typelevel" % "kind-projector"     % Versions.kindProjector).cross(CrossVersion.full)
+  lazy val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % Versions.betterMonadicFor
 }
