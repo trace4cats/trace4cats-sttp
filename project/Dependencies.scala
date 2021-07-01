@@ -8,7 +8,7 @@ object Dependencies {
     val trace4cats = "0.12.0-RC1+156-7ea07b63"
 
     val http4s = "0.23.0-RC1"
-    val sttpClient3 = "3.3.7"
+    val sttpClient3 = "3.3.9"
     val sttpModel = "1.4.7"
     val sttpTapir = "0.18.0-M15"
 
