@@ -6,6 +6,7 @@ object Dependencies {
     val scala213 = "2.13.6"
 
     val trace4cats = "0.12.0-RC2"
+    val trace4catsHttp4s = "0.12.0-RC2"
 
     val http4s = "0.23.0-RC1"
     val sttpClient3 = "3.3.9"
@@ -19,10 +20,10 @@ object Dependencies {
   lazy val trace4catsBase = "io.janstenpickle"           %% "trace4cats-base"            % Versions.trace4cats
   lazy val trace4catsCore = "io.janstenpickle"           %% "trace4cats-core"            % Versions.trace4cats
   lazy val trace4catsExporterCommon = "io.janstenpickle" %% "trace4cats-exporter-common" % Versions.trace4cats
-  lazy val trace4catsHttp4sCommon = "io.janstenpickle"   %% "trace4cats-http4s-common"   % Versions.trace4cats
   lazy val trace4catsInject = "io.janstenpickle"         %% "trace4cats-inject"          % Versions.trace4cats
   lazy val trace4catsModel = "io.janstenpickle"          %% "trace4cats-model"           % Versions.trace4cats
   lazy val trace4catsTestkit = "io.janstenpickle"        %% "trace4cats-testkit"         % Versions.trace4cats
+  lazy val trace4catsHttp4sCommon = "io.janstenpickle"   %% "trace4cats-http4s-common"   % Versions.trace4catsHttp4s
 
   lazy val http4sClient = "org.http4s" %% "http4s-client" % Versions.http4s
 
