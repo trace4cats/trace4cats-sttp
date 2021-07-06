@@ -11,7 +11,7 @@ trait SttpBackendSyntax {
 
   implicit class TracedSttpBackendSyntax[F[_], +P](backend: SttpBackend[F, P]) {
     def liftTrace[G[_]](
-      toHeaders: ToHeaders = ToHeaders.all,
+      toHeaders: ToHeaders = ToHeaders.standard,
       spanNamer: SttpSpanNamer = SttpSpanNamer.methodWithPath
     )(implicit P: Provide[F, G, Span[F]], F: MonadCancelThrow[F], G: Async[G]): SttpBackend[G, P] =
       new SttpBackendTracer[F, G, P, Span[F]](
