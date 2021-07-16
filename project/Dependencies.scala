@@ -9,9 +9,10 @@ object Dependencies {
     val trace4catsHttp4s = "0.12.0-RC2"
 
     val http4s = "0.23.0-RC1"
+    val logback = "1.2.3"
     val sttpClient3 = "3.3.11"
     val sttpModel = "1.4.9"
-    val sttpTapir = "0.18.0"
+    val sttpTapir = "0.19.0-M1"
 
     val kindProjector = "0.13.0"
     val betterMonadicFor = "0.3.1"
@@ -25,8 +26,8 @@ object Dependencies {
   lazy val trace4catsTestkit = "io.janstenpickle"        %% "trace4cats-testkit"         % Versions.trace4cats
   lazy val trace4catsHttp4sCommon = "io.janstenpickle"   %% "trace4cats-http4s-common"   % Versions.trace4catsHttp4s
 
-  lazy val http4sClient = "org.http4s" %% "http4s-client" % Versions.http4s
-
+  lazy val http4sClient = "org.http4s"                         %% "http4s-client"       % Versions.http4s
+  lazy val logback = "ch.qos.logback"                           % "logback-classic"     % Versions.logback
   lazy val sttpClient3 = "com.softwaremill.sttp.client3"       %% "cats"                % Versions.sttpClient3
   lazy val sttpClient3Http4s = "com.softwaremill.sttp.client3" %% "http4s-backend"      % Versions.sttpClient3
   lazy val sttpModel = "com.softwaremill.sttp.model"           %% "core"                % Versions.sttpModel

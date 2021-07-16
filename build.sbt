@@ -70,7 +70,8 @@ lazy val `sttp-tapir` = (project in file("modules/sttp-tapir"))
       Dependencies.http4sClient,
       Dependencies.sttpTapirJsonCirce,
       Dependencies.trace4catsExporterCommon,
-      //Dependencies.sttpTapirHttp4s
+      Dependencies.sttpTapirHttp4s,
+      Dependencies.logback
     ).map(_ % Test)
   )
   .dependsOn(`sttp-common` % "compile->compile;test->test")
