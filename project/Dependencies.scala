@@ -9,7 +9,7 @@ object Dependencies {
     val trace4catsHttp4s = "0.12.0-RC2"
 
     val http4s = "0.23.0-RC1"
-    val logback = "1.2.3"
+    val logback = "1.2.4"
     val sttpClient3 = "3.3.11"
     val sttpModel = "1.4.9"
     val sttpTapir = "0.19.0-M1"
