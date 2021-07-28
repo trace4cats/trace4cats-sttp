@@ -7,7 +7,7 @@ object Dependencies {
     val scala3 = "3.0.1"
 
     val trace4cats = "0.12.0-RC2+17-d73c7ff3"
-    val trace4catsHttp4s = "0.12.0-RC2+5-acd4b5b6"
+    val trace4catsHttp4s = "0.12.0-RC2+4-3d20c440"
 
     val http4s = "0.23.0-RC1"
     val logback = "1.2.5"
