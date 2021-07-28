@@ -11,7 +11,7 @@ import sttp.model.{Header, Headers}
 class SttpHeadersConverterSpec extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks with ArbitraryInstances {
   behavior.of("SttpHeaders.converter")
 
-  it should "convert headers isomorphically" in forAll { traceHeaders: TraceHeaders =>
+  it should "convert headers isomorphically" in forAll { (traceHeaders: TraceHeaders) =>
     assert(Eq.eqv(traceHeaders, converter.from(converter.to(traceHeaders))))
   }
 

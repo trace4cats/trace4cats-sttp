@@ -1,6 +1,7 @@
 package io.janstenpickle.trace4cats.sttp.tapir.model
 
 import cats.Show
+import cats.syntax.show._
 import io.circe.generic.auto._
 import io.janstenpickle.trace4cats.base.optics.Getter
 import sttp.model.StatusCode
@@ -16,7 +17,12 @@ object ErrorInfo {
   case class Unknown(code: Int, msg: String) extends ErrorInfo
   case object NoContent extends ErrorInfo
 
-  implicit val show: Show[ErrorInfo] = cats.derived.semiauto.show
+  implicit val show: Show[ErrorInfo] = Show.show {
+    case NotFound(what) => show"NotFound(what = $what)"
+    case Unauthorized(realm) => show"Unauthorized(realm = $realm)"
+    case Unknown(code, msg) => show"Unknown(code = $code, msg = $msg)"
+    case NoContent => show"NoContent"
+  }
 
   val endpointOutput: EndpointOutput[ErrorInfo] =
     oneOf[ErrorInfo](
