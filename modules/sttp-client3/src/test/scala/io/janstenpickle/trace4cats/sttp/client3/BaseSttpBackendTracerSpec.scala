@@ -6,7 +6,6 @@ import cats.implicits._
 import cats.{~>, Eq, Id}
 import io.janstenpickle.trace4cats.`export`.RefSpanCompleter
 import io.janstenpickle.trace4cats.base.context.Provide
-import io.janstenpickle.trace4cats.http4s.common.Http4sHeaders
 import io.janstenpickle.trace4cats.inject.{EntryPoint, Trace}
 import io.janstenpickle.trace4cats.kernel.{SpanCompleter, SpanSampler}
 import io.janstenpickle.trace4cats.model.TraceHeaders
@@ -15,7 +14,7 @@ import io.janstenpickle.trace4cats.{Span, ToHeaders}
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`WWW-Authenticate`
-import org.http4s.implicits.http4sKleisliResponseSyntaxOptionT
+import org.http4s.syntax.kleisli._
 import org.http4s.{Challenge, HttpApp, HttpRoutes, Response}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.Assertion
@@ -119,7 +118,7 @@ abstract class BaseSttpBackendTracerSpec[F[_]: Async, G[_]: Sync: Trace, Ctx](
         req
           .as[String]
           .flatMap { key =>
-            headersRef.update(_.updated(key, Http4sHeaders.converter.from(req.headers)))
+            headersRef.update(_.updated(key, TraceHeaders(req.headers.headers.map(h => h.name -> h.value).toMap)))
           }
           .as(resp)
       }

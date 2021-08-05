@@ -41,6 +41,7 @@ lazy val `sttp-client3` = (project in file("modules/sttp-client3"))
     name := "trace4cats-sttp-client3",
     libraryDependencies ++= Seq(Dependencies.trace4catsBase, Dependencies.trace4catsCore, Dependencies.sttpClient3),
     libraryDependencies ++= Seq(
+      Dependencies.http4sDsl,
       Dependencies.trace4catsExporterCommon,
       Dependencies.trace4catsInject,
       Dependencies.sttpClient3Http4s
@@ -56,8 +57,7 @@ lazy val `sttp-common` = (project in file("modules/sttp-common"))
     libraryDependencies ++= Seq(
       Dependencies.trace4catsTestkit,
       Dependencies.trace4catsBase,
-      Dependencies.trace4catsCore,
-      Dependencies.trace4catsHttp4sCommon
+      Dependencies.trace4catsCore
     ).map(_ % Test)
   )
 
@@ -68,6 +68,7 @@ lazy val `sttp-tapir` = (project in file("modules/sttp-tapir"))
     libraryDependencies ++= Seq(Dependencies.trace4catsInject, Dependencies.sttpTapirCats),
     libraryDependencies ++= Seq(
       Dependencies.http4sClient,
+      Dependencies.http4sDsl,
       Dependencies.sttpTapirJsonCirce,
       Dependencies.trace4catsExporterCommon,
       Dependencies.sttpTapirHttp4s,
