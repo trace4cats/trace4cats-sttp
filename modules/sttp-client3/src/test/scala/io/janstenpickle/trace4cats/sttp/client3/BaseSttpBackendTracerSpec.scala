@@ -14,7 +14,6 @@ import io.janstenpickle.trace4cats.{Span, ToHeaders}
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`WWW-Authenticate`
-import org.http4s.syntax.kleisli._
 import org.http4s.{Challenge, HttpApp, HttpRoutes, Response}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.Assertion
