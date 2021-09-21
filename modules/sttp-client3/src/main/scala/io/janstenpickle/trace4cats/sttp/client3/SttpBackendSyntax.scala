@@ -6,6 +6,7 @@ import io.janstenpickle.trace4cats.base.optics.{Getter, Lens}
 import io.janstenpickle.trace4cats.model.{AttributeValue, TraceHeaders}
 import io.janstenpickle.trace4cats.{Span, ToHeaders}
 import sttp.client3.{Response, SttpBackend}
+import sttp.model.HeaderNames
 
 trait SttpBackendSyntax {
 
@@ -13,6 +14,7 @@ trait SttpBackendSyntax {
     def liftTrace[G[_]](
       toHeaders: ToHeaders = ToHeaders.standard,
       spanNamer: SttpSpanNamer = SttpSpanNamer.methodWithPath,
+      dropHeadersWhen: String => Boolean = HeaderNames.isSensitive,
       attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]] = Getter(_ => Map.empty)
     )(implicit P: Provide[F, G, Span[F]], F: MonadCancelThrow[F], G: Async[G]): SttpBackend[G, P] =
       new SttpBackendTracer[F, G, P, Span[F]](
@@ -20,6 +22,7 @@ trait SttpBackendSyntax {
         Lens.id,
         Getter((toHeaders.fromContext _).compose(_.context)),
         spanNamer,
+        dropHeadersWhen,
         attributesFromResponse
       )
 
@@ -27,9 +30,17 @@ trait SttpBackendSyntax {
       spanLens: Lens[Ctx, Span[F]],
       headersGetter: Getter[Ctx, TraceHeaders],
       spanNamer: SttpSpanNamer = SttpSpanNamer.methodWithPath,
+      dropHeadersWhen: String => Boolean = HeaderNames.isSensitive,
       attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]] = Getter(_ => Map.empty)
     )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Async[G]): SttpBackend[G, P] =
-      new SttpBackendTracer[F, G, P, Ctx](backend, spanLens, headersGetter, spanNamer, attributesFromResponse)
+      new SttpBackendTracer[F, G, P, Ctx](
+        backend,
+        spanLens,
+        headersGetter,
+        spanNamer,
+        dropHeadersWhen,
+        attributesFromResponse
+      )
   }
 
 }

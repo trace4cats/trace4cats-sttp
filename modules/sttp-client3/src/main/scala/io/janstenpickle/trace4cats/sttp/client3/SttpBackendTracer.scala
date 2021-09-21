@@ -1,6 +1,7 @@
 package io.janstenpickle.trace4cats.sttp.client3
 
 import cats.effect.kernel.{Async, MonadCancelThrow}
+import cats.syntax.functor._
 import cats.syntax.flatMap._
 import io.janstenpickle.trace4cats.Span
 import io.janstenpickle.trace4cats.base.context.Provide
@@ -10,6 +11,7 @@ import io.janstenpickle.trace4cats.sttp.common.{SttpHeaders, SttpStatusMapping}
 import sttp.capabilities.{Effect => SttpEffect}
 import sttp.client3.impl.cats.implicits._
 import sttp.client3.{HttpError, Request, Response, SttpBackend}
+import sttp.model.Headers
 import sttp.monad.{MonadError => SttpMonadError}
 
 class SttpBackendTracer[F[_], G[_], +P, Ctx](
@@ -17,6 +19,7 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
   spanLens: Lens[Ctx, Span[F]],
   headersGetter: Getter[Ctx, TraceHeaders],
   spanNamer: SttpSpanNamer,
+  dropHeadersWhen: String => Boolean,
   attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]]
 )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Async[G])
     extends SttpBackend[G, P] {
@@ -36,18 +39,23 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
           val lower = P.provideK(childCtx)
           val ctxBackend = backend.mapK(P.liftK, lower)
 
-          val headers = headersGetter.get(childCtx)
-          val req = request.headers(SttpHeaders.converter.to(headers).headers: _*)
+          val ctxHeaders = headersGetter.get(childCtx)
+          val req = request.headers(SttpHeaders.converter.to(ctxHeaders).headers: _*)
 
           val isSampled = childSpan.context.traceFlags.sampled == SampleDecision.Include
           // only extract request attributes if the span is sampled as the host parsing is quite expensive
-          val requestAttributes = F.whenA(isSampled)(childSpan.putAll(SttpRequest.toAttributes(request)))
+          val requestAttributes = if (isSampled) SttpRequest.toAttributes(request) else Map.empty
 
-          requestAttributes >> lower(ctxBackend.send(req))
-            .flatTap { resp =>
-              childSpan.setStatus(SttpStatusMapping.statusToSpanStatus(resp.statusText, resp.code)) >>
-                F.whenA(isSampled)(childSpan.putAll(attributesFromResponse.get(resp.copy(body = ()))))
-            }
+          for {
+            _ <- childSpan.putAll(
+              SttpHeaders.requestFields(Headers(req.headers), dropHeadersWhen) ++ requestAttributes: _*
+            )
+            resp <- lower(ctxBackend.send(req))
+            _ <- childSpan.setStatus(SttpStatusMapping.statusToSpanStatus(resp.statusText, resp.code))
+            _ <- childSpan.putAll(SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen): _*)
+            // attributesFromResponse could be expensive, so only call if the span is sampled
+            _ <- F.whenA(isSampled)(childSpan.putAll(attributesFromResponse.get(resp.copy(body = ()))))
+          } yield resp
         }
     }
 
