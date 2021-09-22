@@ -20,7 +20,7 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
   headersGetter: Getter[Ctx, TraceHeaders],
   spanNamer: SttpSpanNamer,
   dropHeadersWhen: String => Boolean,
-  attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]]
+  responseAttributesGetter: Getter[Response[_], Map[String, AttributeValue]]
 )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Async[G])
     extends SttpBackend[G, P] {
   def send[T, R >: P with SttpEffect[G]](request: Request[T, R]): G[Response[T]] =
@@ -54,7 +54,7 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
             _ <- childSpan.setStatus(SttpStatusMapping.statusToSpanStatus(resp.statusText, resp.code))
             _ <- childSpan.putAll(SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen): _*)
             // attributesFromResponse could be expensive, so only call if the span is sampled
-            _ <- F.whenA(isSampled)(childSpan.putAll(attributesFromResponse.get(resp.copy(body = ()))))
+            _ <- F.whenA(isSampled)(childSpan.putAll(attributesFromResponse.get(resp)))
           } yield resp
         }
     }

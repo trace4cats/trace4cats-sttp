@@ -15,7 +15,7 @@ trait SttpBackendSyntax {
       toHeaders: ToHeaders = ToHeaders.standard,
       spanNamer: SttpSpanNamer = SttpSpanNamer.methodWithPath,
       dropHeadersWhen: String => Boolean = HeaderNames.isSensitive,
-      attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]] = Getter(_ => Map.empty)
+      responseAttributesGetter: Getter[Response[_], Map[String, AttributeValue]] = Getter(_ => Map.empty)
     )(implicit P: Provide[F, G, Span[F]], F: MonadCancelThrow[F], G: Async[G]): SttpBackend[G, P] =
       new SttpBackendTracer[F, G, P, Span[F]](
         backend,
@@ -31,7 +31,7 @@ trait SttpBackendSyntax {
       headersGetter: Getter[Ctx, TraceHeaders],
       spanNamer: SttpSpanNamer = SttpSpanNamer.methodWithPath,
       dropHeadersWhen: String => Boolean = HeaderNames.isSensitive,
-      attributesFromResponse: Getter[Response[Unit], Map[String, AttributeValue]] = Getter(_ => Map.empty)
+      responseAttributesGetter: Getter[Response[_], Map[String, AttributeValue]] = Getter(_ => Map.empty)
     )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Async[G]): SttpBackend[G, P] =
       new SttpBackendTracer[F, G, P, Ctx](
         backend,
