@@ -23,7 +23,7 @@ trait SttpBackendSyntax {
         Getter((toHeaders.fromContext _).compose(_.context)),
         spanNamer,
         dropHeadersWhen,
-        attributesFromResponse
+        responseAttributesGetter
       )
 
     def liftTraceContext[G[_], Ctx](
@@ -39,7 +39,7 @@ trait SttpBackendSyntax {
         headersGetter,
         spanNamer,
         dropHeadersWhen,
-        attributesFromResponse
+        responseAttributesGetter
       )
   }
 

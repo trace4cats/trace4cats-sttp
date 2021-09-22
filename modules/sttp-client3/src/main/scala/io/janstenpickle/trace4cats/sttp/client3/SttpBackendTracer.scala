@@ -52,9 +52,10 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
             )
             resp <- lower(ctxBackend.send(req))
             _ <- childSpan.setStatus(SttpStatusMapping.statusToSpanStatus(resp.statusText, resp.code))
-            _ <- childSpan.putAll(SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen): _*)
+            headerAttrs = SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen)
             // attributesFromResponse could be expensive, so only call if the span is sampled
-            _ <- F.whenA(isSampled)(childSpan.putAll(attributesFromResponse.get(resp)))
+            extraRespAttrs = if (isSampled) responseAttributesGetter.get(resp) else Map.empty
+            _ <- childSpan.putAll((headerAttrs ++ extraRespAttrs): _*)
           } yield resp
         }
     }
