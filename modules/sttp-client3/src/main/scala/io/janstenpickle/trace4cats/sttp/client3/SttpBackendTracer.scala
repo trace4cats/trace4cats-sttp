@@ -42,20 +42,19 @@ class SttpBackendTracer[F[_], G[_], +P, Ctx](
           val ctxHeaders = headersGetter.get(childCtx)
           val req = request.headers(SttpHeaders.converter.to(ctxHeaders).headers: _*)
 
+          val reqHeaderAttrs = SttpHeaders.requestFields(Headers(req.headers), dropHeadersWhen)
           val isSampled = childSpan.context.traceFlags.sampled == SampleDecision.Include
           // only extract request attributes if the span is sampled as the host parsing is quite expensive
-          val requestAttributes = if (isSampled) SttpRequest.toAttributes(request) else Map.empty
+          val reqExtraAttrs = if (isSampled) SttpRequest.toAttributes(request) else Map.empty
 
           for {
-            _ <- childSpan.putAll(
-              SttpHeaders.requestFields(Headers(req.headers), dropHeadersWhen) ++ requestAttributes: _*
-            )
+            _ <- childSpan.putAll(reqHeaderAttrs ++ reqExtraAttrs: _*)
             resp <- lower(ctxBackend.send(req))
             _ <- childSpan.setStatus(SttpStatusMapping.statusToSpanStatus(resp.statusText, resp.code))
-            headerAttrs = SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen)
+            respHeaderAttrs = SttpHeaders.responseFields(Headers(resp.headers), dropHeadersWhen)
             // attributesFromResponse could be expensive, so only call if the span is sampled
-            extraRespAttrs = if (isSampled) responseAttributesGetter.get(resp) else Map.empty
-            _ <- childSpan.putAll((headerAttrs ++ extraRespAttrs): _*)
+            respExtraAttrs = if (isSampled) responseAttributesGetter.get(resp) else Map.empty
+            _ <- childSpan.putAll(respHeaderAttrs ++ respExtraAttrs: _*)
           } yield resp
         }
     }
