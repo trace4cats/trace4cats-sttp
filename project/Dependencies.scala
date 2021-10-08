@@ -11,7 +11,7 @@ object Dependencies {
     val http4s = "0.23.5"
     val logback = "1.2.6"
     val sttpClient3 = "3.3.15"
-    val sttpModel = "1.4.14"
+    val sttpModel = "1.4.15"
     val sttpTapir = "0.19.0-M11"
 
     val kindProjector = "0.13.2"
