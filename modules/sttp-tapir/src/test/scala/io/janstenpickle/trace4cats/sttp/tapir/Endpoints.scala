@@ -31,7 +31,7 @@ class Endpoints[F[_]: Sync, G[_]: MonadCancelThrow: Trace] {
       .out(customJsonBody[Device])
       .errorOut(ErrorInfo.endpointOutput)
       .serverLogic { case (id, _, _) =>
-        //some logic that returns Either[E, O]
+        // some logic that returns Either[E, O]
         Either
           .cond(id > 0, Device(id, "processor", 11), ErrorInfo.NotFound(s"deviceId=$id"): ErrorInfo)
           .pure[G]
@@ -45,7 +45,7 @@ class Endpoints[F[_]: Sync, G[_]: MonadCancelThrow: Trace] {
       .out(customJsonBody[Vendor])
       .errorOut(ErrorInfoException.endpointOutput)
       .serverLogicRecoverErrors { case (id, _, _) =>
-        //some logic that raises errors via MonadThrow
+        // some logic that raises errors via MonadThrow
         Either
           .cond(id > 0, Vendor(id, "Impel"), ErrorInfoException.NotFound(s"vendorId=$id"): ErrorInfoException)
           .liftTo[G]
