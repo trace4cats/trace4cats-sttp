@@ -26,10 +26,10 @@ object ErrorInfo {
 
   val endpointOutput: EndpointOutput[ErrorInfo] =
     oneOf[ErrorInfo](
-      oneOfMapping(StatusCode.NotFound, jsonBody[NotFound]),
-      oneOfMapping(StatusCode.Unauthorized, jsonBody[Unauthorized]),
-      oneOfMapping(StatusCode.NoContent, emptyOutput.map(_ => NoContent)(_ => ())),
-      oneOfDefaultMapping(jsonBody[Unknown])
+      oneOfVariant(StatusCode.NotFound, jsonBody[NotFound]),
+      oneOfVariant(StatusCode.Unauthorized, jsonBody[Unauthorized]),
+      oneOfVariant(StatusCode.NoContent, emptyOutput.map(_ => NoContent)(_ => ())),
+      oneOfDefaultVariant(jsonBody[Unknown])
     )
 
   val statusCodeGetter: Getter[ErrorInfo, StatusCode] = {
