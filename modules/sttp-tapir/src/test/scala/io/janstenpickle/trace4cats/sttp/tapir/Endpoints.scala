@@ -61,24 +61,23 @@ class Endpoints[F[_]: Sync, G[_]: MonadCancelThrow: Trace] {
     auth.liftTo[F](ErrorInfoException.Unauthorized("catalog"): ErrorInfoException) >>
       Sync[F].delay(UUID.randomUUID().toString).map(TraceContext(_, span))
 
-  def tracedEndpoints(
-    entryPoint: EntryPoint[F]
-  )(implicit P: Provide[F, G, Span[F]]): List[ServerEndpoint[_, _, _, Any, F]] = List(
-    devices.inject(
-      entryPoint,
-      _._3,
-      errorToSpanStatus = TapirStatusMapping.errorShowToSpanStatus(ErrorInfo.statusCodeGetter)
-    ),
-    vendors.inject(
-      entryPoint,
-      _._3,
-      errorToSpanStatus = TapirStatusMapping.errorMessageToSpanStatus(ErrorInfoException.statusCodeGetter)
+  def tracedEndpoints(entryPoint: EntryPoint[F])(implicit P: Provide[F, G, Span[F]]): List[ServerEndpoint[Any, F]] =
+    List(
+      devices.inject(
+        entryPoint,
+        _._3,
+        errorToSpanStatus = TapirStatusMapping.errorShowToSpanStatus(ErrorInfo.statusCodeGetter)
+      ),
+      vendors.inject(
+        entryPoint,
+        _._3,
+        errorToSpanStatus = TapirStatusMapping.errorMessageToSpanStatus(ErrorInfoException.statusCodeGetter)
+      )
     )
-  )
 
   def tracedContextEndpoints(
     entryPoint: EntryPoint[F]
-  )(implicit P: Provide[F, G, TraceContext[F]]): List[ServerEndpoint[_, _, _, Any, F]] = List(
+  )(implicit P: Provide[F, G, TraceContext[F]]): List[ServerEndpoint[Any, F]] = List(
     devices.injectContext(
       entryPoint,
       (in, s) => mkContextOrErr(in._2, s),

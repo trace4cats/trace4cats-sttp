@@ -19,10 +19,10 @@ object ErrorInfoException {
 
   val endpointOutput: EndpointOutput[ErrorInfoException] =
     oneOf[ErrorInfoException](
-      oneOfMapping(StatusCode.NotFound, jsonBody[NotFound]),
-      oneOfMapping(StatusCode.Unauthorized, jsonBody[Unauthorized]),
-      oneOfMapping(StatusCode.NoContent, emptyOutput.map(_ => NoContent)(_ => ())),
-      oneOfDefaultMapping(jsonBody[Unknown])
+      oneOfVariant(StatusCode.NotFound, jsonBody[NotFound]),
+      oneOfVariant(StatusCode.Unauthorized, jsonBody[Unauthorized]),
+      oneOfVariant(StatusCode.NoContent, emptyOutput.map(_ => NoContent)(_ => ())),
+      oneOfDefaultVariant(jsonBody[Unknown])
     )
 
   val statusCodeGetter: Getter[ErrorInfoException, StatusCode] = {
