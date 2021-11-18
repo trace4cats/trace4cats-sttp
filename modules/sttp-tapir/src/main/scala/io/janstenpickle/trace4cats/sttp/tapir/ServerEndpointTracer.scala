@@ -17,15 +17,21 @@ import scala.reflect.ClassTag
 
 object ServerEndpointTracer {
   def inject[I, E, O, R, F[_], G[_], Ctx](
-    serverEndpoint: ServerEndpoint[I, E, O, R, G],
+    serverEndpoint: ServerEndpoint.Full[Unit, Unit, I, E, O, R, G],
     k: ResourceKleisli[F, I, Either[E, Ctx]],
     inHeadersGetter: Getter[I, Headers],
     outHeadersGetter: Getter[O, Headers],
     errorToSpanStatus: TapirStatusMapping[E],
     dropHeadersWhen: String => Boolean
-  )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Monad[G], T: Trace[G]): ServerEndpoint[I, E, O, R, F] =
-    serverEndpoint.copy(logic =
-      MEF =>
+  )(implicit
+    P: Provide[F, G, Ctx],
+    F: MonadCancelThrow[F],
+    G: Monad[G],
+    T: Trace[G]
+  ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] =
+    ServerEndpoint.public(
+      endpoint = serverEndpoint.endpoint,
+      logic = MEF =>
         input => {
           k(input).use {
             EitherT
@@ -35,7 +41,7 @@ object ServerEndpointTracer {
                 val MEG = MEF.imapK(P.liftK)(lower)
                 EitherT {
                   Trace[G].putAll(SttpHeaders.requestFields(inHeadersGetter.get(input), dropHeadersWhen): _*) >>
-                    serverEndpoint.logic(MEG)(input)
+                    serverEndpoint.logic(MEG)(())(input)
                 }.semiflatTap { output =>
                   Trace[G].putAll(SttpHeaders.responseFields(outHeadersGetter.get(output), dropHeadersWhen): _*)
                 }.leftSemiflatTap { err =>
@@ -48,7 +54,7 @@ object ServerEndpointTracer {
     )
 
   def injectRecoverErrors[I, E <: Throwable, O, R, F[_], G[_], Ctx](
-    serverEndpoint: ServerEndpoint[I, E, O, R, G],
+    serverEndpoint: ServerEndpoint.Full[Unit, Unit, I, E, O, R, G],
     k: ResourceKleisli[F, I, Ctx],
     inHeadersGetter: Getter[I, Headers],
     outHeadersGetter: Getter[O, Headers],
@@ -60,15 +66,18 @@ object ServerEndpointTracer {
     G: Monad[G],
     T: Trace[G],
     eClassTag: ClassTag[E]
-  ): ServerEndpoint[I, E, O, R, F] =
-    serverEndpoint.copy(logic =
-      inject(
-        serverEndpoint,
-        k.attemptNarrow[E],
-        inHeadersGetter,
-        outHeadersGetter,
-        errorToSpanStatus,
-        dropHeadersWhen
-      ).logic
+  ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] =
+    ServerEndpoint.public(
+      endpoint = serverEndpoint.endpoint,
+      logic = MEF =>
+        input =>
+          inject(
+            serverEndpoint,
+            k.attemptNarrow[E],
+            inHeadersGetter,
+            outHeadersGetter,
+            errorToSpanStatus,
+            dropHeadersWhen
+          ).logic(MEF)(())(input)
     )
 }

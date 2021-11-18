@@ -13,7 +13,9 @@ import sttp.tapir.server.ServerEndpoint
 import scala.reflect.ClassTag
 
 trait ServerEndpointSyntax {
-  implicit class TracedServerEndpoint[I, E, O, R, F[_], G[_]](serverEndpoint: ServerEndpoint[I, E, O, R, G]) {
+  implicit class TracedServerEndpoint[I, E, O, R, F[_], G[_]](
+    serverEndpoint: ServerEndpoint.Full[Unit, Unit, I, E, O, R, G]
+  ) {
     def inject(
       entryPoint: EntryPoint[F],
       inHeadersGetter: Getter[I, Headers] = _ => Headers(Nil),
@@ -26,7 +28,7 @@ trait ServerEndpointSyntax {
       F: MonadCancelThrow[F],
       G: Monad[G],
       T: Trace[G]
-    ): ServerEndpoint[I, E, O, R, F] = {
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] = {
       val inputSpanNamer = spanNamer(serverEndpoint.endpoint, _)
       val context = TapirResourceKleislis
         .fromHeaders(inHeadersGetter, inputSpanNamer, dropHeadersWhen)(entryPoint.toKleisli)
@@ -52,7 +54,7 @@ trait ServerEndpointSyntax {
       F: MonadCancelThrow[F],
       G: Monad[G],
       T: Trace[G]
-    ): ServerEndpoint[I, E, O, R, F] =
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] =
       ServerEndpointTracer.inject(
         serverEndpoint,
         k.map(_.asRight[E]),
@@ -75,7 +77,7 @@ trait ServerEndpointSyntax {
       F: MonadCancelThrow[F],
       G: Monad[G],
       T: Trace[G]
-    ): ServerEndpoint[I, E, O, R, F] = {
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] = {
       val inputSpanNamer = spanNamer(serverEndpoint.endpoint, _)
       val context = TapirResourceKleislis.fromHeadersContext(
         makeContext,
@@ -100,7 +102,12 @@ trait ServerEndpointSyntax {
       outHeadersGetter: Getter[O, Headers] = _ => Headers(Nil),
       dropHeadersWhen: String => Boolean = HeaderNames.isSensitive,
       errorToSpanStatus: TapirStatusMapping[E] = TapirStatusMapping.errorStringToInternal
-    )(implicit P: Provide[F, G, Ctx], F: MonadCancelThrow[F], G: Monad[G], T: Trace[G]): ServerEndpoint[I, E, O, R, F] =
+    )(implicit
+      P: Provide[F, G, Ctx],
+      F: MonadCancelThrow[F],
+      G: Monad[G],
+      T: Trace[G]
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] =
       ServerEndpointTracer.inject(
         serverEndpoint,
         k,
@@ -112,7 +119,7 @@ trait ServerEndpointSyntax {
   }
 
   implicit class TracedServerEndpointRecoverErrors[I, E <: Throwable, O, R, F[_], G[_]](
-    serverEndpoint: ServerEndpoint[I, E, O, R, G]
+    serverEndpoint: ServerEndpoint.Full[Unit, Unit, I, E, O, R, G]
   ) {
     def injectContextRecoverErrors[Ctx](
       entryPoint: EntryPoint[F],
@@ -128,7 +135,7 @@ trait ServerEndpointSyntax {
       G: Monad[G],
       T: Trace[G],
       eClassTag: ClassTag[E]
-    ): ServerEndpoint[I, E, O, R, F] = {
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] = {
       val inputSpanNamer = spanNamer(serverEndpoint.endpoint, _)
       val context = TapirResourceKleislis.fromHeadersContextRecoverErrors(
         makeContext,
@@ -160,7 +167,7 @@ trait ServerEndpointSyntax {
       G: Monad[G],
       T: Trace[G],
       eClassTag: ClassTag[E]
-    ): ServerEndpoint[I, E, O, R, F] =
+    ): ServerEndpoint.Full[Unit, Unit, I, E, O, R, F] =
       ServerEndpointTracer.injectRecoverErrors(
         serverEndpoint,
         k,

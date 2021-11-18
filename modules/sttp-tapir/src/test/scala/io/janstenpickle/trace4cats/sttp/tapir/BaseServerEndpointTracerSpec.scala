@@ -22,7 +22,7 @@ import scala.collection.immutable.Queue
 
 abstract class BaseServerEndpointTracerSpec[F[_]: Async](
   unsafeRunK: F ~> Id,
-  injectEndpoints: EntryPoint[F] => List[ServerEndpoint[_, _, _, Any, F]],
+  injectEndpoints: EntryPoint[F] => List[ServerEndpoint[Any, F]],
   checkMkContextErrors: Boolean
 ) extends AnyFlatSpec
     with ScalaCheckDrivenPropertyChecks
