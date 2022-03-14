@@ -12,7 +12,7 @@ object Dependencies {
     val logback = "1.2.10"
     val sttpClient3 = "3.5.0"
     val sttpModel = "1.4.23"
-    val sttpTapir = "0.20.1"
+    val sttpTapir = "0.19.4"
 
     val kindProjector = "0.13.2"
     val betterMonadicFor = "0.3.1"
