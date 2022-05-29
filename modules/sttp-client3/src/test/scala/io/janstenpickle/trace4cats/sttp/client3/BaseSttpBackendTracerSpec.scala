@@ -4,13 +4,12 @@ import cats.data.NonEmptyList
 import cats.effect.kernel.{Async, Ref, Sync}
 import cats.implicits._
 import cats.{~>, Eq, Id}
-import io.janstenpickle.trace4cats.`export`.RefSpanCompleter
-import io.janstenpickle.trace4cats.base.context.Provide
-import io.janstenpickle.trace4cats.inject.{EntryPoint, Trace}
-import io.janstenpickle.trace4cats.kernel.{SpanCompleter, SpanSampler}
-import io.janstenpickle.trace4cats.model.TraceHeaders
-import io.janstenpickle.trace4cats.sttp.common.SttpStatusMapping
-import io.janstenpickle.trace4cats.{Span, ToHeaders}
+import trace4cats.RefSpanCompleter
+import trace4cats.context.Provide
+import trace4cats.{EntryPoint, Trace}
+import trace4cats.kernel.{SpanCompleter, SpanSampler}
+import trace4cats.model.TraceHeaders
+import trace4cats.{Span, ToHeaders}
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`WWW-Authenticate`
@@ -23,6 +22,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sttp.client3._
 import sttp.client3.http4s.Http4sBackend
 import sttp.model.StatusCode
+import trace4cats.sttp.common.SttpStatusMapping
 
 abstract class BaseSttpBackendTracerSpec[F[_]: Async, G[_]: Sync: Trace, Ctx](
   unsafeRunK: F ~> Id,

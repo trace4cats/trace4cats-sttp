@@ -2,10 +2,10 @@ package io.janstenpickle.trace4cats.sttp.client3
 
 import cats.data.Kleisli
 import cats.effect.IO
-import io.janstenpickle.trace4cats.ToHeaders
+import trace4cats.ToHeaders
 import io.janstenpickle.trace4cats.sttp.client3.Instances._
-import io.janstenpickle.trace4cats.sttp.client3.syntax._
-import io.janstenpickle.trace4cats.sttp.common.{RunIOToId, TraceContext}
+import trace4cats.sttp.client3.syntax._
+import trace4cats.sttp.common.{RunIOToId, TraceContext}
 
 class TracedSttpBackendCtxSpec
     extends BaseSttpBackendTracerSpec[IO, Kleisli[IO, TraceContext[IO], *], TraceContext[IO]](

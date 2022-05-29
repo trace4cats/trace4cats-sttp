@@ -1,4 +1,4 @@
-package io.janstenpickle.trace4cats.sttp.client3
+package trace4cats.sttp.tapir
 
 import cats.data.Kleisli
 import cats.effect.IO
