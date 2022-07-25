@@ -27,7 +27,7 @@ class Endpoints[F[_]: Sync, G[_]: MonadCancelThrow: Trace] {
       .in("devices" / path[Int]("deviceId"))
       .in(header[Option[String]]("X-Auth-Token"))
       .in(headers.map(Headers.apply _)(_.headers.toList))
-      .out(customJsonBody[Device])
+      .out(jsonBody[Device])
       .errorOut(ErrorInfo.endpointOutput)
       .serverLogic { case (id, _, _) =>
         // some logic that returns Either[E, O]
@@ -41,7 +41,7 @@ class Endpoints[F[_]: Sync, G[_]: MonadCancelThrow: Trace] {
       .in("vendors" / path[Int]("vendorId"))
       .in(header[Option[String]]("X-Auth-Token"))
       .in(headers.map(Headers.apply _)(_.headers.toList))
-      .out(customJsonBody[Vendor])
+      .out(jsonBody[Vendor])
       .errorOut(ErrorInfoException.endpointOutput)
       .serverLogicRecoverErrors { case (id, _, _) =>
         // some logic that raises errors via MonadThrow
