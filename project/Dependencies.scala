@@ -4,13 +4,13 @@ object Dependencies {
   object Versions {
     val scala212 = "2.12.16"
     val scala213 = "2.13.8"
-    val scala3 = "3.1.2"
+    val scala3 = "3.1.3"
 
     val trace4cats = "0.13.1+67-a7d9b849"
 
     val http4s = "0.23.13"
     val logback = "1.2.11"
-    val sttpClient3 = "3.5.2"
+    val sttpClient3 = "3.6.2"
     val sttpModel = "1.5.0"
     val sttpTapir = "1.0.2"
 
