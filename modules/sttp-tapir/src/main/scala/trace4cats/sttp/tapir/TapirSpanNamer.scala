@@ -1,10 +1,7 @@
 package trace4cats.sttp.tapir
 
-import sttp.tapir.internal._
-
 object TapirSpanNamer {
-  def method[I]: TapirSpanNamer[I] = (ep, _) => ep.input.method.fold("ANY")(_.method)
-  def pathTemplate[I]: TapirSpanNamer[I] = (ep, _) => ep.renderPathTemplate()
-  def methodWithPathTemplate[I]: TapirSpanNamer[I] = (ep, _) =>
-    ep.input.method.fold("ANY")(_.method) + " " + ep.renderPathTemplate()
+  def method[I]: TapirSpanNamer[I] = (ep, _) => ep.method.map(_.toString()).getOrElse("*")
+  def pathTemplate[I]: TapirSpanNamer[I] = (ep, _) => ep.showPathTemplate(showQueryParam = None)
+  def methodWithPathTemplate[I]: TapirSpanNamer[I] = (ep, i) => s"${method(ep, i)} ${pathTemplate(ep, i)}"
 }
