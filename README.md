@@ -12,8 +12,8 @@ Integration layer for [Trace4Cats] and [Sttp]/[Tapir].
 Add it to your `build.sbt`:
 
 ```scala
-"io.janstenpickle" %% "trace4cats-sttp-client3" % "0.13.1"
-"io.janstenpickle" %% "trace4cats-sttp-tapir" % "0.13.1"
+"io.janstenpickle" %% "trace4cats-sttp-client3" % "0.14.0"
+"io.janstenpickle" %% "trace4cats-sttp-tapir" % "0.14.0"
 ```
 
 
