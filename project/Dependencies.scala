@@ -14,7 +14,7 @@ object Dependencies {
     val sttpModel = "1.5.0"
     val sttpTapir = "1.0.3"
 
-    val kindProjector = "0.13.2"
+    val kindProjector = "0.13.3"
     val betterMonadicFor = "0.3.1"
   }
 
